@@ -78,7 +78,6 @@ class TextRank4Keyword:
         """Get normalized matrix"""
         # Build matrix
         vocab_size = len(vocab)
-        print(vocab_size)
         g = np.zeros((vocab_size, vocab_size), dtype='float')
         for word1, word2 in token_pairs:
             i, j = vocab[word1], vocab[word2]
@@ -111,7 +110,6 @@ class TextRank4Keyword:
         out_file = open('./Output/WordOut_' + file_name, 'w', encoding="utf8")
         node_weight = OrderedDict(sorted(node_weights.items(), key=lambda t: t[1], reverse=True))
         for i, (key, value) in enumerate(node_weight.items()):
-            print(key + ' - ' + str(value))
             out_file.write(key + ' - ' + str(value)+'\n')
             if i > number:
                 break
@@ -129,7 +127,7 @@ class TextRank4Keyword:
                     token = token.replace(u'\u200c', ' ')
                     candid_phrase.append(token)
                 else:
-                    if len(candid_phrase)>1:
+                    if len(candid_phrase) > 1 and (tagss[i][1] == 'N' or tagss[i][1] == 'Ne' or True):
                         sentence_candid_phrases.append(candid_phrase)
                     candid_phrase = []
             all_candid_phrases.append(sentence_candid_phrases)
@@ -151,7 +149,6 @@ class TextRank4Keyword:
         out_file = open('./Output/PhraseOut_' + file_name, 'w', encoding="utf8")
         node_weight = OrderedDict(sorted(phrase_weights.items(), key=lambda t: t[1], reverse=True))
         for i, (key, value) in enumerate(node_weight.items()):
-            print(key + ' - ' + str(value))
             out_file.write(key + ' - ' + str(value) + '\n')
             if i > number:
                 break
