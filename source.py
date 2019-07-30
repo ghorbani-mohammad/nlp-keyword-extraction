@@ -142,13 +142,39 @@ class TextRank4Keyword:
                 phrases_score[phrase_string] = score/count
         return phrases_score
 
+    def check_equal_phrases(self, confirmed_keyphrases, candid_keyphrase):
+        keyphrase_splited = candid_keyphrase[0][0].split()
+        if len(confirmed_keyphrases) == 0:
+            return False
+        else:
+            for (key, value) in confirmed_keyphrases:
+                current_keyphrase = key.split()
+                common_words = set(keyphrase_splited).intersection(set(current_keyphrase))
+                if len(common_words) > 1:
+                    # If candid phrase has score greater than %80 of confirmed phrase we use that
+                    if candid_keyphrase[0][1] > (80 / 100) * value:
+                        return False
+                    else:
+                        return True
+            return False
+
+
     def get_keyphrases(self, file_name, phrase_weights, number=10):
         out_file = open('./Output/PhraseOut_' + file_name, 'w', encoding="utf8")
         node_weight = OrderedDict(sorted(phrase_weights.items(), key=lambda t: t[1], reverse=True))
+        confirmed = 0
+        outputed_phrase = []
         for i, (key, value) in enumerate(node_weight.items()):
-            out_file.write(key + ' - ' + str(value) + '\n')
-            if i > number:
+            if confirmed > number:
                 break
+            """------>Below lines has been added<------"""
+            phrase = list()
+            phrase.append((key, value))
+            check_result = self.check_equal_phrases(outputed_phrase, phrase)
+            if check_result == False:
+                outputed_phrase.append((key, value))
+                out_file.write(key + ' - ' + str(value) + '\n')
+                confirmed = confirmed + 1
         out_file.close()
 
 def analyze_files():
