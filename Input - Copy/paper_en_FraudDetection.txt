@@ -1,0 +1,16 @@
+Credit card fraud detection is an essential part of screening fraudulent transactions in advance of their authorization by card issuers 
+Although credit card frauds occur extremely infrequently, they result in huge losses as most fraudulent transactions have large values 
+An adequate detection of fraud allows investigators to take timely actions that can potentially prevent additional fraud or financial losses
+In practice, however, investigators can only check a few alerts per day since the investigation process can be long and tedious
+Thus, the primary goal of the fraud detection model is to return accurate alerts with fewer false alarms and missed frauds 
+Conventional fraud detection is mainly based on the hybrid ensemble of diverse machine learning models
+Recently, several studies have compared deep learning and traditional machine learning models including ensemble 
+However, these studies used evaluation methods without considering that the real-world fraud detection system operated with the constraints 
+the number of investigators who check the high-risk transactions from the data-driven scoring models are limited 
+the two types of misclassification, false alarms and missed frauds, have different costs 
+In this study, we conducted an in-depth comparison between the hybrid ensemble and deep learning method to determine whether or not to adopt the latter in our partner’s system that currently operates with the hybrid ensemble model
+To compare the two, we introduced the champion-challenger framework and the development process of the two models 
+After developing the two models, we evaluated them on large transaction data sets taken from our partner, a major card issuing company in South Korea 
+We used various practical evaluation metrics appropriate for this domain that has severe class and cost imbalances 
+Moreover, we deployed these models in a real-world fraud detection system to check the post-launch performance for one month 
+The challenger outperformed the champion on both in off-line and post-launch tests

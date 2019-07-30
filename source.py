@@ -6,17 +6,19 @@ import os
 import sys
 from collections import OrderedDict
 import numpy as np
-np.set_printoptions(threshold=sys.maxsize)
 
-# sentences = sent_tokenize('ما هم برای وصل کردن آمدیم! ولی برای پردازش، جدا بهتر نیست؟')
 
+"""Showing whole matrix not just truncated"""
+# np.set_printoptions(threshold=sys.maxsize)
+
+
+"""We use hazm library for pos tagging"""
 tagger = POSTagger(model='resources/postagger.model')
-# print(tagger.tag(word_tokenize('ما بسیار کتاب می‌خوانیم')))
 tags = tagger.tag(word_tokenize('ما بسیار کتاب می‌خوانیم'))
 
 
 class TextRank4Keyword:
-    """Extract keywords from text"""
+    """Extract keywords and keyphrase from text"""
     def __init__(self):
         self.d = 0.85  # damping coefficient, usually is .85
         self.min_diff = 1e-5  # convergence threshold  0.00001
@@ -76,7 +78,6 @@ class TextRank4Keyword:
 
     def get_matrix(self, vocab, token_pairs):
         """Get normalized matrix"""
-        # Build matrix
         vocab_size = len(vocab)
         g = np.zeros((vocab_size, vocab_size), dtype='float')
         for word1, word2 in token_pairs:
@@ -88,10 +89,7 @@ class TextRank4Keyword:
         return g_norm
 
     def calculate_score(self, vocab, matrix):
-        # Initionlization for weight(pagerank value)
         pr = np.array([1] * len(vocab))
-
-        # Iteration
         previous_pr = 0
         for epoch in range(self.steps):
             pr = (1 - self.d) + self.d * np.dot(matrix, pr)
@@ -99,8 +97,6 @@ class TextRank4Keyword:
                 break
             else:
                 previous_pr = sum(pr)
-
-        # Get weight for each node
         node_weight = dict()
         for word, index in vocab.items():
             node_weight[word] = pr[index]
@@ -139,10 +135,11 @@ class TextRank4Keyword:
             for phrase in sentence_phrases:
                 score = 0
                 phrase_string = ''
+                count = len(phrase)
                 for word in phrase:
                     score = score + scores[word]
                     phrase_string += ' '+word
-                phrases_score[phrase_string] = score
+                phrases_score[phrase_string] = score/count
         return phrases_score
 
     def get_keyphrases(self, file_name, phrase_weights, number=10):
@@ -166,7 +163,7 @@ def analyze_files():
         sentences = tr4w.get_sentences(text_normalized)
         sentences_processed = tr4w.prepare_sentences(sentences, ['N', 'V', 'Ne', 'AJ', 'AJe'])
         vocab = tr4w.get_vocab(sentences_processed)
-        token_pairs = tr4w.get_token_pairs(2, sentences_processed)
+        token_pairs = tr4w.get_token_pairs(4, sentences_processed)
         matrix = tr4w.get_matrix(vocab, token_pairs)
         scores = tr4w.calculate_score(vocab, matrix)
         tr4w.get_keywords(file, scores)
